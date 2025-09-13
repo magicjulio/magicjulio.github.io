@@ -49,9 +49,9 @@ export default function Home() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {[
             {
-              title: "ML Modell",
-              description: "A machine learning model for predictive analytics.",
-              codeLink: "https://github.com/magicjulio/ml-modell"
+              title: "Chat App",
+              description: "A group chat app for organizing one time events. Build with Node.js, React and Firebase.",
+              codeLink: "https://tempy-six.vercel.app/"
             },
             {
               title: "Web Scrapping",
