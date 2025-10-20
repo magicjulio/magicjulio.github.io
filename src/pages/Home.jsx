@@ -49,19 +49,19 @@ export default function Home() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {[
             {
-              title: "Chat App",
-              description: "A group chat app for organizing one time events. Build with Node.js, React and Firebase.",
-              codeLink: "https://tempy-six.vercel.app/"
+              title: "AI Food Computer Vision",
+              description: "I used transfer learning to create a modell that can predict if an image contains pizza, steak or sushi.",
+              codeLink: "https://pizzasteaksushi-production.up.railway.app/"
             },
             {
-              title: "Web Scrapping",
-              description: "A web scraping tool to collect and analyze data.",
-              codeLink: "https://github.com/magicjulio/web-scrapping"
+              title: "Chat App",
+              description: "Currently offline due to firebase db not active.",
+              codeLink: "https://tempy-six.vercel.app"
             },
             {
               title: "Elgeoo UNO R3",
-              description: "Arduino-based robotics project using UNO R3.",
-              codeLink: "https://github.com/magicjulio/elgegoo-uno-r3"
+              description: "Placeholder project.",
+              codeLink: ""
             }
           ].map((project) => (
             <motion.div
