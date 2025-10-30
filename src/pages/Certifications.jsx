@@ -12,9 +12,14 @@ const certificates = [
 		back: "I did CS50x!",
 	},
 	{
+		title: "Certificate 6",
+		img: "/certs/UC-06faf300-9d2b-4f19-8f7b-b1e61e378894.jpg",
+		back: "Deep Learning is so intresting. Like its it kinda wyld that you can teach a computer to understand what pizza looks like. You can try on of the models i build here: huggingface.co/spaces/julius-py/food101 ",
+	},
+	{
 		title: "Ethical Hacking",
 		img: "/certs/UC-55d68018-1884-4d7d-a9ab-4b176f7ad429.jpg",
-		back: "I did this on udemy.",
+		back: "This one was a good introduction to Ethical Hacking. I learned a lot hands on.",
 	},
 	{
 		title: "Certificate 4",
@@ -26,11 +31,7 @@ const certificates = [
 		img: "/certs/36ebad6df0712e8e6be72dd06776bdd6232e8e9333cb295a2dd3e232db201f27.png",
 		back: "Snyk Fetch the Flag with the Nahomies!",
 	},
-	{
-		title: "Certificate 6",
-		img: "/certs/UC-28085c15-a9e0-409c-b5a3-8c4dbda928d8.jpg",
-		back: "Check out his Youtube videos! Hes amazing",
-	},
+
 ];
 
 export default function Certifications() {
@@ -44,7 +45,7 @@ export default function Certifications() {
 		<div className="px-6 py-16 text-center">
 			<h1 className="text-3xl font-bold text-cyan-400">Certifications</h1>
 			<p className="text-gray-300 mt-4">
-				Here are my certifications and achievements.
+				Here are my biggest certifications and achievements.
 			</p>
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10 justify-items-center">
 				{certificates.map((cert, idx) => (
