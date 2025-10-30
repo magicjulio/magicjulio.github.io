@@ -10,7 +10,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <Router>
+    <Router basename="/">
       <div className="bg-gray-950 text-gray-100 min-h-screen font-sans overflow-x-hidden">
         {/* Navbar */}
         <nav className="fixed top-0 left-0 w-full bg-gray-900 shadow-md z-50">
