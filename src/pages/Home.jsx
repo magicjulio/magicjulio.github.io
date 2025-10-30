@@ -55,13 +55,13 @@ export default function Home() {
             },
             {
               title: "Chat App",
-              description: "Currently offline due to firebase db not active.",
+              description: "Currently offline to safe firebase recourcess",
               codeLink: "https://tempy-six.vercel.app"
             },
             {
-              title: "Elgeoo UNO R3",
-              description: "Placeholder project.",
-              codeLink: ""
+              title: "MyWish.ai",
+              description: "Dev ops für ai app startup.",
+              codeLink: "https://www.mywish.ai/"
             }
           ].map((project) => (
             <motion.div
