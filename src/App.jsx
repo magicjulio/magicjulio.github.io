@@ -5,6 +5,7 @@ import Certifications from "./pages/Certifications";
 import Books from "./pages/Books";
 import Blogs from "./pages/Blogs";
 import Cv from "./pages/Cv";
+import Flag from "./pages/Flag";
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -23,6 +24,7 @@ export default function App() {
               <li><Link to="/books" className="hover:text-cyan-400">Books</Link></li>
               <li><Link to="/blogs" className="hover:text-cyan-400">Blogs</Link></li>
               <li><Link to="/cv" className="hover:text-cyan-400">CV</Link></li>
+              <li><Link to="/flag" className="hover:text-cyan-400">flag</Link></li>
             </ul>
             {/* Hamburger Button */}
             <button
@@ -55,6 +57,7 @@ export default function App() {
             <Route path="/books" element={<Books />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/cv" element={<Cv />} />
+            <Route path="/flag" element={<Flag />} />
           </Routes>
         </div>
       </div>

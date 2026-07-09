@@ -31,11 +31,42 @@ const certificates = [
 		img: "/certs/36ebad6df0712e8e6be72dd06776bdd6232e8e9333cb295a2dd3e232db201f27.png",
 		back: "Snyk Fetch the Flag with the Nahomies!",
 	},
-
+	{
+		title: "Orpheus Seminar Jena",
+		img: "/certs/orpheus-jena-preview.jpg",
+		pdf: "/certs/Urkunde-Orpheus%20Seminar-Jena.pdf",
+		back: "Urkunde vom Orpheus Seminar in Jena.",
+	},
+	{
+		title: "Rietschen",
+		img: "/certs/rietschen-preview.jpg",
+		pdf: "/certs/rietschen.pdf",
+		back: "Zertifikat aus Rietschen.",
+	},
+	{
+		title: "Orpheus Seminar Würzburg",
+		img: "/certs/orpheus-wuerzburg-preview.jpg",
+		pdf: "/certs/Urkunde-Orpheus%20Seminar-Wu%CC%88rzburg.pdf",
+		back: "Urkunde vom Orpheus Seminar in Würzburg.",
+	},
+	{
+		title: "Coursera ZEQ6015ZH3DM",
+		img: "/certs/coursera-zeq6015zh3dm-preview.jpg",
+		pdf: "/certs/Coursera%20ZEQ6015ZH3DM.pdf",
+		back: "Coursera Zertifikat.",
+	},
+	{
+		title: "Orpheus Herbstseminar Frankfurt am Main",
+		img: "/certs/orpheus-frankfurt-preview.jpg",
+		pdf: "/certs/Urkunde-Orpheus%20Herbstseminar-Frankfurt%20am%20Main.pdf",
+		back: "Urkunde vom Orpheus Herbstseminar in Frankfurt am Main.",
+	},
 ];
 
 export default function Certifications() {
-	const [flipped, setFlipped] = useState(Array(6).fill(false));
+	const [flipped, setFlipped] = useState(() =>
+		Array(certificates.length).fill(false)
+	);
 
 	const handleFlip = (idx) => {
 		setFlipped((prev) => prev.map((f, i) => (i === idx ? !f : f)));
@@ -69,8 +100,19 @@ export default function Certifications() {
 								/>
 							</div>
 							{/* Back */}
-							<div className="card-back absolute w-full h-full bg-gray-800 text-cyan-300 rounded-lg shadow-lg flex items-center justify-center px-4">
+							<div className="card-back absolute w-full h-full bg-gray-800 text-cyan-300 rounded-lg shadow-lg flex flex-col items-center justify-center gap-3 px-4">
 								<span>{cert.back}</span>
+								{cert.pdf && (
+									<a
+										href={cert.pdf}
+										target="_blank"
+										rel="noopener noreferrer"
+										onClick={(event) => event.stopPropagation()}
+										className="rounded-lg border border-cyan-700/60 px-3 py-1 text-sm text-cyan-200 hover:bg-cyan-900/40"
+									>
+										PDF öffnen
+									</a>
+								)}
 							</div>
 						</div>
 					</div>

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, FileDown } from "lucide-react";
-import { label, link } from "framer-motion/client";
+
+const MotionDiv = motion.div;
 
 export default function Cv() {
   const [modal, setModal] = useState({
@@ -34,11 +35,18 @@ export default function Cv() {
     <div className="bg-gray-950 text-gray-100 min-h-screen overflow-x-hidden">
       {/* Header / Actions */}
         <header className="max-w-6xl mx-auto px-4 pt-24 pb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-          <span className="text-cyan-400">JULIUS</span> GROSSERODE
-            </h1>
-            <p className="text-gray-400 mt-1">Informatiker · Interactive CV</p>
+          <div className="flex items-center gap-4">
+            <img
+              src="/me.jpg"
+              alt="Julius Grosserode"
+              className="h-24 w-24 shrink-0 rounded-2xl border border-gray-800 object-cover object-[52%_35%] shadow-lg md:h-32 md:w-32"
+            />
+            <div>
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+            <span className="text-cyan-400">JULIUS</span> GROSSERODE
+              </h1>
+              <p className="text-gray-400 mt-1">Informatiker · Interactive CV</p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <a
@@ -522,14 +530,14 @@ export default function Cv() {
       {/* Modal */}
       <AnimatePresence>
         {modal.open && (
-          <motion.div
+          <MotionDiv
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <div className="absolute inset-0 bg-black/70" onClick={close} />
-            <motion.div
+            <MotionDiv
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 20, opacity: 0 }}
@@ -591,11 +599,10 @@ export default function Cv() {
                   {modal.link.label} <ExternalLink size={16} />
                 </a>
               )}
-            </motion.div>
-          </motion.div>
+            </MotionDiv>
+          </MotionDiv>
         )}
       </AnimatePresence>
     </div>
   );
 }
-
