@@ -1,602 +1,573 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ExternalLink, FileDown } from "lucide-react";
+import { X, ArrowUpRight, Download } from "lucide-react";
 
 const MotionDiv = motion.div;
 
+/** Small helper so every string carries both languages next to each other. */
+const L = (en, de) => ({ en, de });
+
+const profile = {
+  name: "Julius Grosserode",
+  born: "19.06.2006",
+  city: "Hannover",
+  mail: "julius@grossero.de",
+  role: L("Computer Science student", "Informatikstudent"),
+  intro: L(
+    "Born 2006 in Hannover. I study computer science at LUH. I want to help make AI safe.",
+    "2006 in Hannover geboren. Ich studiere Informatik an der LUH. Ich möchte helfen KI sicher zu gestalten."
+  ),
+};
+
+const labels = {
+  cv: L("Curriculum Vitae", "Lebenslauf"),
+  pdf: L("PDF", "PDF"),
+  home: L("Home", "Startseite"),
+  education: L("Education", "Bildungsweg"),
+  work: L("Experience", "Arbeit"),
+  contests: L("Seminars & competitions", "Seminare & Wettbewerbe"),
+  courses: L("Courses", "Weiterbildung"),
+  engagement: L("Engagement", "Ehrenamt"),
+  other: L("Besides that", "Nebenbei"),
+  languages: L("Languages", "Sprachen"),
+  links: L("Links", "Links"),
+  contact: L("Contact", "Kontakt"),
+};
+
+const education = [
+  {
+    when: "2025 —",
+    title: L("B.Sc. Computer Science", "B.Sc. Informatik"),
+    meta: L("Leibniz University Hannover", "Leibniz Universität Hannover"),
+  },
+  {
+    when: "2010 – 2024",
+    title: L("Abitur · GPA 1.8", "Abitur · Notendurchschnitt 1,8"),
+    meta: L("Johannes-Kepler-Gymnasium Garbsen", "Johannes-Kepler-Gymnasium Garbsen"),
+    detail: L(
+      "Focus in mathematics, physics and chemistry. Awarded for the best Abitur in mathematics and for outstanding results in physics and philosophy.",
+      "Leistungskurse Mathematik, Physik und Chemie. Ausgezeichnet für das beste Abitur im Fach Mathematik sowie für hervorragende Leistungen in Physik und Philosophie."
+    ),
+  },
+];
+
+const work = [
+  {
+    title: L("Research assistant (HiWi) · IFUM", "Hilfswissenschaftler (HiWi) · IFUM"),
+    meta: L("Material characterisation", "Materialcharakterisierung"),
+    detail: L(
+      "Institute of Forming Technology and Machines at LUH.",
+      "Institut für Umformtechnik und Umformmaschinen der LUH."
+    ),
+  },
+  {
+    title: L("Mywish.ai · DevOps", "Mywish.ai · DevOps"),
+    meta: L("LLM orchestration · CI/CD", "LLM-Orchestrierung · CI/CD"),
+    link: { href: "https://mywish.ai", label: "mywish.ai" },
+  },
+  {
+    title: L("TK Maxx · Sales assistant", "TK Maxx · Aushilfe"),
+    meta: L("Service · logistics · team", "Service · Warenlogistik · Team"),
+  },
+];
+
+const contests = [
+  {
+    title: L("German Hacking Championship", "Deutsche Hackermeisterschaft"),
+    meta: L("Qualified via CSCG", "Qualifikation über CSCG"),
+    detail: L(
+      "Qualified through the Cyber Security Challenge Germany and took part in the national finals.",
+      "Über die Cyber Security Challenge Germany qualifiziert und am Bundesfinale teilgenommen."
+    ),
+    images: ["/dhm2.png"],
+    link: { href: "https://hacking-meisterschaft.de/", label: "hacking-meisterschaft.de" },
+  },
+  {
+    title: L("Orpheus seminars", "Orpheus Seminare"),
+    meta: L("Physics olympiad preparation", "Vorbereitung Physik-Olympiade"),
+    detail: L(
+      "Preparation seminars for the International Physics Olympiad in Göttingen, Würzburg, Frankfurt am Main and Jena — lectures and exchange.",
+      "Vorbereitungsseminare für die Internationale Physik-Olympiade in Göttingen, Würzburg, Frankfurt am Main und Jena — Vorlesungen und Austausch."
+    ),
+    images: ["/orpheus.JPG"],
+    link: {
+      href: "https://www.orpheus-verein.de/de/uber-uns/veranstaltungen/",
+      label: "orpheus-verein.de",
+    },
+  },
+  {
+    title: L("OpenAI Parameter Golf", "OpenAI Parameter Golf"),
+  },
+  {
+    title: L("Battlesnake Blackout", "Battlesnake Blackout"),
+  },
+  {
+    title: L("Europe project", "Europaprojekt"),
+    meta: L("German-Italian exchange", "Deutsch-italienischer Austausch"),
+    images: ["/europa.png", "/europa_c.jpg"],
+    link: {
+      href: "https://www.jkg-garbsen.de/portal/meldungen/deutsch-italienisches-europa-projekt-2023-1244-22.html?rubrik=900000004",
+      label: "jkg-garbsen.de",
+    },
+  },
+  {
+    title: L("Language trip to England", "Sprachreise England"),
+    meta: L("Two weeks in Brighton", "Zwei Wochen in Brighton"),
+    detail: L(
+      "Two weeks of intensive language practice and everyday life in Brighton.",
+      "Zwei Wochen intensive Sprachpraxis und Alltag in Brighton."
+    ),
+    images: [{ src: "/en_c1.jpg", portrait: true }, { src: "/newton.png" }],
+  },
+  {
+    title: L("Youth media camp Nordwest", "Jugend Medien Camp Nordwest"),
+    meta: L("Media production · AI in journalism", "Medienproduktion · KI im Journalismus"),
+    detail: L(
+      "Workshops on media production, technology and how AI is changing journalism.",
+      "Workshops zu Medienproduktion, Technik und dazu, wie KI den Journalismus verändert."
+    ),
+    link: { href: "https://jugendmediencamp.de/", label: "jugendmediencamp.de" },
+  },
+  {
+    title: L("Berlin trip with the school paper", "Berlinfahrt mit der Schülerzeitung"),
+    meta: L("Political institutions · editorial networking", "Politische Institutionen · Redaktionen"),
+    detail: L(
+      "Visiting political institutions in Berlin and meeting editorial teams from all over Germany.",
+      "Besuch politischer Institutionen in Berlin mit Redaktionen aus ganz Deutschland."
+    ),
+    images: [
+      { src: "/unz.png" },
+      { src: "/berlin.png" },
+      { src: "/berlin2.png", portrait: true },
+    ],
+    link: {
+      href: "https://www.ndr.de/kultur/Die-Ellipse-Beste-Schuelerzeitung-Deutschlands-kommt-aus-Garbsen,ellipse100.html",
+      label: "ndr.de",
+    },
+  },
+];
+
+const courses = [
+  {
+    title: L("Harvard CS50x", "Harvard CS50x"),
+    meta: L("Algorithms · data structures · C/Python", "Algorithmen · Datenstrukturen · C/Python"),
+    detail: L(
+      "Harvard's introduction to computer science, taken online and finished with the final project.",
+      "Harvards Einführung in die Informatik, online belegt und mit dem Abschlussprojekt beendet."
+    ),
+    images: ["/certs/CS50x.png"],
+    link: { href: "https://cs50.harvard.edu/x", label: "cs50.harvard.edu" },
+  },
+  {
+    title: L("Udemy courses", "Udemy Kurse"),
+    meta: L("Ethical hacking · machine learning · web dev", "Ethical Hacking · Machine Learning · Web Dev"),
+    detail: L(
+      "Several hands-on courses on ethical hacking, machine learning and web development.",
+      "Mehrere praxisnahe Kurse zu Ethical Hacking, Machine Learning und Webentwicklung."
+    ),
+    images: ["/certs/UC-55d68018-1884-4d7d-a9ab-4b176f7ad429.jpg"],
+  },
+  {
+    title: L("CTFs", "CTFs"),
+    meta: L("CSCG · Fetch the Flag · SWAMP · NahamCon", "CSCG · Fetch the Flag · SWAMP · NahamCon"),
+    link: { href: "/certifications", label: L("Certificates", "Zertifikate") },
+  },
+];
+
+const engagement = [
+  {
+    title: L("Founder of the CTF team at LUH", "Gründer des CTF-Teams an der LUH"),
+    meta: L("Leibniz University Hannover", "Leibniz Universität Hannover"),
+    detail: L(
+      "I started a Capture the Flag team at Leibniz University Hannover: organising meeting, picking competitions to play and getting new members started with web, crypto and reversing challenges.",
+      "Ich habe an der Leibniz Universität Hannover ein Capture-the-Flag-Team gegründet: Treffen organisieren, ctfs auswählen und neue Mitglieder an Web-, Crypto- und Reversing-Challenges heranführen."
+    ),
+  },
+  {
+    title: L("School paper „Die Ellipse“", "Schülerzeitung „Die Ellipse“"),
+    meta: L("Editor", "Redaktionsmitglied"),
+    detail: L(
+      "During my time in the editorial team the paper won several awards — among them best school newspaper in Germany.",
+      "Während meiner Zeit in der Redaktion wurde die Zeitung mehrfach ausgezeichnet — unter anderem als beste Schülerzeitung Deutschlands in der Kategorie Gymnasium."
+    ),
+    images: [{ src: "/sz.png", portrait: true }],
+  }
+];
+
+const other = [
+  {
+    title: L("Author", "Autor"),
+    meta: L("Two books on philosophy", "Zwei Bücher über Philosophie"),
+    images: [{ src: "/cover1.jpg", portrait: true }, { src: "/cover2.jpg", portrait: true }],
+    link: { href: "/books", label: L("More about the books", "Mehr zu den Büchern") },
+  },
+  {
+    title: L("Magician", "Zauberer"),
+    meta: L("A lockdown hobby that got out of hand", "Ein Corona-Hobby, das eskaliert ist"),
+    images: ["/magic.png"],
+    link: { href: "https://youtu.be/H_jV_IhDBBI", label: "Music Video YouTube" },
+  },
+  {
+    title: L("Poetry slam", "Poetry Slam"),
+    meta: L("#SPAM by macht_worte", "#SPAM von macht_worte"),
+    link: { href: "https://youtu.be/O1BormhwNB4", label: "YouTube" },
+  },
+];
+
+const languages = [
+  {
+    title: L("German", "Deutsch"),
+    meta: L("Native", "Muttersprache"),
+  },
+  {
+    title: L("English", "Englisch"),
+    meta: L("Fluent · C1", "Fließend · C1"),
+    detail: L(" ", " "),
+    images: [{ src: "/en_c1.jpg", portrait: true }],
+  },
+  {
+    title: L("Spanish", "Spanisch"),
+    meta: L("Basics", "Grundkenntnisse"),
+    detail: L("Me llamo Julio.", "Me llamo Julio."),
+  },
+];
+
+
+
+const links = [
+  { label: "GitHub", href: "https://github.com/magicjulio", meta: "magicjulio" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/julius-grosserode-20219b222/",
+    meta: "julius-grosserode",
+  },
+  {
+    label: "Medium",
+    href: "https://medium.com/@julius.grosserode.19",
+    meta: L("Technical blog", "Technischer Blog"),
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/juliuss.py/",
+    meta: L("Private, on request", "Privat, auf Anfrage"),
+  },
+  
+  {
+    label: "Substack",
+    href: "https://juliuspy.substack.com/",
+    meta: L("Philosophy and Politics", "Philosophie und Politik"),
+  },
+
+
+];
+
 export default function Cv() {
-  const [modal, setModal] = useState({
-    open: false,
-    title: "",
-    content: "",
-    link: null,
-    images: [],
-  });
+  const [lang, setLang] = useState("en");
+  const [detail, setDetail] = useState(null);
 
-  const open = (payload) => setModal({ open: true, ...payload });
-  const close = () =>
-    setModal({ open: false, title: "", content: "", link: null, images: [] });
+  const t = (value) => (value && typeof value === "object" && "en" in value ? value[lang] : value);
 
-  // Quick helpers for reusable UI bits
-  const Tag = ({ children }) => (
-    <span className="text-xs px-2 py-1 rounded-full bg-cyan-900/40 text-cyan-300 border border-cyan-700/40">
-      {children}
-    </span>
+  useEffect(() => {
+    if (!detail) return undefined;
+    const onKey = (event) => event.key === "Escape" && setDetail(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [detail]);
+
+  const Section = ({ label, children }) => (
+    <section className="border-t border-zinc-800/80 pt-6">
+      <h2 className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">{t(label)}</h2>
+      <div className="mt-5">{children}</div>
+    </section>
   );
 
-  const Card = ({ title, children }) => (
-    <div className="bg-gray-900/70 rounded-2xl p-5 shadow-lg border border-gray-800 hover:border-cyan-700/30 transition">
-      <h3 className="text-lg font-semibold text-cyan-300 mb-3">{title}</h3>
-      {children}
-    </div>
-  );
+  /** One row of the CV. Clickable when it carries a note. */
+  const Entry = ({ item, dated }) => {
+    const openable = Boolean(item.detail || item.images);
+    const body = (
+      <>
+        <span className="text-[15px] text-zinc-100 group-hover:text-cyan-300">
+          {t(item.title)}
+        </span>
+        {item.meta && (
+          <span className="mt-0.5 block text-sm text-zinc-500">{t(item.meta)}</span>
+        )}
+      </>
+    );
+
+    return (
+      <div
+        className={`group grid gap-x-5 py-3 ${
+          dated ? "grid-cols-[4.5rem_1fr] sm:grid-cols-[7rem_1fr]" : "grid-cols-1"
+        }`}
+      >
+        {dated && (
+          <span className="pt-1 text-xs tabular-nums text-zinc-600 sm:text-right">
+            {item.when || ""}
+          </span>
+        )}
+        {openable ? (
+          <button
+            type="button"
+            onClick={() => setDetail(item)}
+            className="btn-plain leading-normal"
+          >
+            {body}
+          </button>
+        ) : (
+          <div>{body}</div>
+        )}
+      </div>
+    );
+  };
+
+  const List = ({ items }) => {
+    const dated = items.some((item) => item.when);
+
+    return (
+      <div className="divide-y divide-zinc-900">
+        {items.map((item) => (
+          <Entry key={t(item.title)} item={item} dated={dated} />
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <div className="bg-gray-950 text-gray-100 min-h-screen overflow-x-hidden">
-      {/* Header / Actions */}
-        <header className="max-w-6xl mx-auto px-4 pt-24 pb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-zinc-950 text-zinc-200 antialiased">
+      <div className="mx-auto max-w-5xl px-6 pb-24 pt-14 sm:px-8">
+        {/* Masthead */}
+        <header className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-center gap-5">
             <img
               src="/me.jpg"
-              alt="Julius Grosserode"
-              className="h-24 w-24 shrink-0 rounded-2xl border border-gray-800 object-cover object-[52%_35%] shadow-lg md:h-32 md:w-32"
+              alt={profile.name}
+              className="h-20 w-20 shrink-0 rounded-md object-cover object-[50%_22%] grayscale-[0.15] sm:h-24 sm:w-24"
             />
             <div>
-              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-            <span className="text-cyan-400">JULIUS</span> GROSSERODE
+              <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                {t(labels.cv)}
+              </p>
+              <h1 className="mt-1.5 font-serif text-3xl font-normal tracking-tight text-zinc-50 sm:text-4xl">
+                {profile.name}
               </h1>
-              <p className="text-gray-400 mt-1">Informatiker · Interactive CV</p>
+              <p className="mt-1 text-sm text-zinc-400">
+                {t(profile.role)} · {profile.city}
+              </p>
             </div>
           </div>
+
           <div className="flex items-center gap-3">
+            {/* Language toggle */}
+            <div className="inline-flex items-center rounded-full border border-zinc-800 p-[3px] text-[11px] leading-none">
+              {["en", "de"].map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setLang(code)}
+                  aria-pressed={lang === code}
+                  className={`btn-plain !rounded-full !px-2 !py-1 font-medium uppercase tracking-wider transition ${
+                    lang === code
+                      ? "!bg-zinc-200 text-zinc-900"
+                      : "text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  {code}
+                </button>
+              ))}
+            </div>
+
             <a
-          href="cv.pdf"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 transition shadow !text-white"
-          target="_blank"
-          rel="noopener noreferrer"
+              href="/cv.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 px-3 py-1.5 text-xs !text-zinc-300 transition hover:border-zinc-600 hover:!text-zinc-100"
             >
-          <FileDown size={18} /> Als PDF herunterladen
-            </a>
-            <a
-          href="/"
-          
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 transition"
-            >
-          <ExternalLink size={18} /> Home
+              <Download size={13} /> {t(labels.pdf)}
             </a>
           </div>
         </header>
 
-        {/* Content */}
-      <main className="max-w-6xl mx-auto px-4 pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left column */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card title="About me">
-              <p className="text-gray-300 leading-relaxed">
-                Geboren{" "}
-                <mybutton
-                  className="underline decoration-dotted hover:text-cyan-300 background-color: None"
-                  onClick={() =>
-                    open({
-                      title: "Geburtsdatum",
-                      content: "Juni 2006 in Hannover.",
-                      
-                    })
-                  }
-                >
-                  2006.
-                </mybutton>
-                 &nbsp; Passionate about Coding, Machne Learning & IT-Security. Click on any element to find out more.
-              </p>
-            </Card>
+        {/* Intro */}
+        <p className="mt-10 max-w-2xl text-[15px] leading-7 text-zinc-400">
+          {t(profile.intro)}
+        </p>
+      
+    
 
-            <Card title="Bildungsweg">
-              <ul className="space-y-3">
-                <li className="flex items-start justify-between gap-3">
-                  <div>
-                    <mybutton
-                      onClick={() =>
-                        open({
-                          title: "Abitur (1,8)",
-                          content:
-                            "Johannes-Kepler-Gymnasium Garbsen, 2010–2024. Leistungskurse Mathematik, Physik und Chemie. Ich erhielt Auszeichnugen für das beste Abitur im Fach Mathemathik sowie für Hervoragende Leistungen in den Fächern Physik und Philosophie ",
-                          images: [],
-                        })
-                      }
-                      className="text-left hover:text-cyan-300 transition"
-                    >
-                      Abitur – Notendurchschnitt 1,8.{" "}
-                    </mybutton>
-                    <div className="text-sm text-gray-400">
-                      Johannes-Kepler-Gymnasium Garbsen · 2010–2025
-                    </div>
-                  </div>
-                </li>
-                <li className="flex items-start justify-between gap-3">
-                  <div>
-                    <mybutton
-                      onClick={() =>
-                        open({
-                          title: "B.Sc. Informatik",
-                          content:
-                            "Leibniz Universität Hannover – Studium beginnt im Wintersemester.",
-                          images: [],
-                        })
-                      }
-                      className="text-left hover:text-cyan-300 transition"
-                    >
-                      B.Sc. Informatik (laufend)
-                    </mybutton>
-                    <div className="text-sm text-gray-400">
-                      Leibniz Universität Hannover
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </Card>
-
-            <Card title="Online-Weiterbildung & Kurse">
-              <div className="flex flex-wrap gap-2 mb-4">
-                <Tag>CS50x</Tag>
-                <Tag>Udemy: Ethical Hacking</Tag>
-                <Tag>Udemy: Machine Learning</Tag>
-                <Tag>Udemy: Web Dev</Tag>
-                <Tag>CTFs</Tag>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <mybutton
-                  onClick={() =>
-                    open({
-                      title: "Harvard CS50x",
-                      content:
-                        "Ich habe Havards Computer Science Kurs Online belegt!",
-                      link: {
-                        href: "https://cs50.harvard.edu/x",
-                        label: "CS50x",
-                      },
-                      images: ["/certs/CS50x.png"],
-                    })
-                  }
-                  className="text-left p-3 rounded-xl bg-gray-800/70 hover:bg-gray-800 border border-gray-700"
-                >
-                  <div className="font-medium">Harvard CS50x</div>
-                  <div className="text-sm text-gray-400">
-                    Algorithmen · Datenstrukturen · C/Python · Web
-                  </div>
-                </mybutton>
-
-                <mybutton
-                  onClick={() =>
-                    open({
-                      title: "Udemy",
-                      content:
-                        "Verschiedene Kurse zu Ethical Hacking, Machine Learning und Web Development.",
-                      images: ["/certs/UC-55d68018-1884-4d7d-a9ab-4b176f7ad429.jpg"],
-                    })
-                  }
-                  className="text-left p-3 rounded-xl bg-gray-800/70 hover:bg-gray-800 border border-gray-700"
-                >
-                  <div className="font-medium">
-                    Udemy Kurse
-                  </div>
-                  <div className="text-sm text-gray-400">
-                    Ethical Hacking · Machine Learning · Web Dev
-                  </div>
-                </mybutton>
-              </div>
-            </Card>
-
-            <Card title="Seminare & Wettbewerbe">
-              <ul className="space-y-3">
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Orpheus Seminare",
-                        content:
-                          "Ein Seminar zur Vorbereitung für die Internationale Physik Olympiade. Teilnahme in Göttingen, Würzburg, Frankfurt am Main und Jena. Wissenschaftlicher Austausch und Vorlesungen im Uni Style.",
-                        images: ["/orpheus.JPG"],
-                        link: {href:"https://www.orpheus-verein.de/de/uber-uns/veranstaltungen/", label:"Orpheus Verein Website"},
-          
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Orpheus Seminare
-                  </mybutton>
-                </li>
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Deutsche Hackermeisterschaft",
-                        content:
-                          "Teilnahme an der Deutschen Hackermeisterschaft. Qualifizierung durch cscg.",
-                        images: ["/dhm2.png"],
-                        link: {href:"https://hacking-meisterschaft.de/", label:"DHM Website"},
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Deutsche Hackermeisterschaft
-                  </mybutton>
-                </li>
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Europaprojekt",
-                        content:
-                          "Interdisziplinäres Projekt mit internationalem Fokus. Präsentationen & Teamarbeit mit Italiänischen teilnehmern.",
-                        images: ["/europa.png", "europa_c.jpg"],
-                        link: {href:"https://www.jkg-garbsen.de/portal/meldungen/deutsch-italienisches-europa-projekt-2023-1244-22.html?rubrik=900000004", label:"Schulprojektseite"},
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Europaprojekt
-                  </mybutton>
-                </li>
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Sprachreise England",
-                        content:
-                          "Intensive Sprachpraxis und kulturelle Erfahrungen in Brighton England für 2 Wochen.",
-                        images: [{src:"/en_c1.jpg", portrait: true},{src:"/newton.png"}],
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Sprachreise England
-                  </mybutton>
-                </li>
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Jugend Medien Camp Nordwest",
-                        content:
-                          "Workshops zu Medienproduktion, KI im Journalismus & Technik.",
-                        link: {href:"https://jugendmediencamp.de/", label:"JMC Website"},
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Jugend Medien Camp Nordwest
-                  </mybutton>
-                </li>
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Berlinfahrt mit Schülerzeitung",
-                        content:
-                          "Besuch politischer Institutionen, Netzwerken mit anderen Redaktionen.",
-                        images: [{src:"/unz.png"},{src:"/berlin.png"},{src:"/berlin2.png", portrait: true}],
-                        link: {href:"https://www.ndr.de/kultur/Die-Ellipse-Beste-Schuelerzeitung-Deutschlands-kommt-aus-Garbsen,ellipse100.html", label:"NDR Bericht"},
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Berlinfahrt mit Schülerzeitung
-                  </mybutton>
-                </li>
-              </ul>
-            </Card>
-
-            <Card title="Arbeitserfahrung">
-              <div className="grid sm:grid-cols-2 gap-3">
-                <mybutton
-                  onClick={() =>
-                    open({
-                      title: "TK Maxx – Aushilfe",
-                      content:
-                        "Kundenbetreuung, Warenlogistik, Teamarbeit – Soft Skills in Praxis.",
-                    })
-                  }
-                  className="text-left p-3 rounded-xl bg-gray-800/70 hover:bg-gray-800 border border-gray-700"
-                >
-                  TK Maxx – Aushilfe
-                  <div className="text-sm text-gray-400">
-                    Service · Organisation · Team
-                  </div>
-                </mybutton>
-                <mybutton
-                  onClick={() =>
-                    open({
-                      title: "Mywish.ai – DevOps CD / CI",
-                      content:
-                        "Startup-Erfahrung: Automatisierung, Deployment, Monitoring. Stack: GitHub Actions + SonarCloud.",
-                        link: {href:"https://mywish.ai", label:"mywish.ai"},
-                      
-                    })
-                  }
-                  className="text-left p-3 rounded-xl bg-gray-800/70 hover:bg-gray-800 border border-gray-700"
-                >
-                  Startup Mywish.ai – DevOps
-                  <div className="text-sm text-gray-400">
-                    CI/CD · GitHub Actions
-                  </div>
-                </mybutton>
-              </div>
-            </Card>
-
-            <Card title="Das bin ich sonst noch...">
-              <ul className="space-y-3">
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Meine Bücher",
-                        content:
-                          "Zwei veröffentlichte Bücher über Philosophie.",
-                        images: [{src: "/cover1.jpg", portrait: true}, {src: "/cover2.jpg", portrait: true}],
-                        link: {href:"/Books", label:"Mehr dazu"},
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Autor
-                  </mybutton>
-                </li>
-
-                 <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Musikvideo",
-                        content:
-                          "Zaubertricks lernen war mein Corona-Hobby. Daraus entstand dieses absolute Banger Musikvideo.",
-                        images: ["/magic.png"],
-                        link: {href:"https://youtu.be/H_jV_IhDBBI?si=5J4lBjAH1_8EXrp6", label:"YouTube Video"},
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Zauberer
-                  </mybutton>
-                </li>
-
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Poetry Slam – SPAM",
-                        content:
-                          "Teilnahme bei Poetry slam #SPAM von macht_worte",
-                        link: {href:"https://youtu.be/O1BormhwNB4?si=2zzUVwiHYwGW_Qa0/", label:"YouTube Video"},
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Dichter
-                  </mybutton>
-                </li>
-               
-                
-              </ul>
-            </Card>
+        {/* Body */}
+        <div className="mt-14 grid gap-14 lg:grid-cols-[1fr_15rem] lg:gap-16">
+          <div className="space-y-12">
+            <Section label={labels.education}>
+              <List items={education} />
+            </Section>
+            <Section label={labels.work}>
+              <List items={work} />
+            </Section>
+            <Section label={labels.contests}>
+              <List items={contests} />
+            </Section>
+            <Section label={labels.courses}>
+              <List items={courses} />
+            </Section>
+            <Section label={labels.engagement}>
+              <List items={engagement} />
+            </Section>
+            <Section label={labels.other}>
+              <List items={other} />
+            </Section>
           </div>
 
-          {/* Right column */}
-          <div className="space-y-6">
-            <Card title="Sprachen">
-              <ul className="space-y-2">
-                <li>
-                  <mybutton
-                    className="hover:text-cyan-300"
-                  >
-                    Deutsch – Muttersprache
-                  </mybutton>
-                </li>
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Englisch",
-                        content:
-                          "C1 Niveau zertifiziert.",
-                        images: [{src: "/en_c1.jpg", portrait: true}],
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Englisch – fließend
-                  </mybutton>
-                </li>
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Español",
-                        content: "Me llamo Julio.",
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Spanisch – Grundkenntnisse
-                  </mybutton>
-                </li>
-              </ul>
-            </Card>
-
-            <Card title="Soft Skills">
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "Eigeninitiative",
-                  "Logisches Denken",
-                  "Problemlösung",
-                  "Strukturierte Arbeitsweise",
-                  "Teamfähigkeit",
-                  
-                ].map((s) => (
-                  <mybutton
-                    className="px-3 py-1 rounded-full bg-gray-800 border border-gray-700 text-sm hover:bg-gray-750 hover:text-cyan-300"
-                  >
-                    {s}
-                  </mybutton>
+          {/* Sidebar */}
+          <aside className="space-y-10 lg:sticky lg:top-24 lg:self-start">
+            <div className="border-t border-zinc-800/80 pt-6">
+              <h2 className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                {t(labels.languages)}
+              </h2>
+              <ul className="mt-4 space-y-3">
+                {languages.map((item) => (
+                  <li key={t(item.title)}>
+                    {item.detail ? (
+                      <button
+                        type="button"
+                        onClick={() => setDetail(item)}
+                        className="btn-plain text-zinc-200 hover:text-cyan-300"
+                      >
+                        <span className="text-sm">{t(item.title)}</span>
+                        <span className="block text-xs text-zinc-500">{t(item.meta)}</span>
+                      </button>
+                    ) : (
+                      <div className="text-sm text-zinc-200">
+                        {t(item.title)}
+                        <span className="block text-xs text-zinc-500">{t(item.meta)}</span>
+                      </div>
+                    )}
+                  </li>
                 ))}
-              </div>
-            </Card>
-
-            <Card title="Engagement">
-              <ul className="space-y-2">
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Seminarfach – Balu und Du",
-                        content:
-                          "Mentoring-Programm: Verantwortung & Sozialkompetenz für dein Mogli.",
-
-                        link: {href:"https://www.balu-und-du.de/", label:"Balu und Du Website"},
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Balu und Du (Seminarfach)
-                  </mybutton>
-                </li>
-                <li>
-                  <mybutton
-                    onClick={() =>
-                      open({
-                        title: "Schülerzeitung – Die Ellipse",
-                        content:
-                          "Während ich teil der Redation unserer Schülerzeitung die Ellipse war wurden wir mehrfach ausgezeichnet. Unter anderem als beste Schülerzeitung Deutschlands.",
-                        images: [{src: "/sz.png", portrait: true}],
-                      })
-                    }
-                    className="hover:text-cyan-300"
-                  >
-                    Mitglied Schülerzeitung „Die Ellipse“
-                  </mybutton>
-                </li>
               </ul>
-            </Card>
+            </div>
 
-            <Card title="Links">
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="https://github.com/magicjulio"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 hover:text-cyan-300"
-                  >
-                    GitHub <ExternalLink size={16} />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://medium.com/@julius.grosserode.19"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 hover:text-cyan-300"
-                  >
-                    Technischer Blog (Medium) <ExternalLink size={16} />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.instagram.com/juliuss.py/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 hover:text-cyan-300"
-                  >
-                    Privat Instagram (Nur auf Anfrage) <ExternalLink size={16} />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.linkedin.com/in/julius-grosserode-20219b222/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 hover:text-cyan-300"
-                  >
-                    LinkedIn <ExternalLink size={16} />
-                  </a>
-                </li>
+            <div className="border-t border-zinc-800/80 pt-6">
+              <h2 className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                {t(labels.links)}
+              </h2>
+              <ul className="mt-4 space-y-3">
+                {links.map((item) => (
+                  <li key={item.label}>
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-baseline gap-1 text-sm !text-zinc-200 hover:!text-cyan-300"
+                    >
+                      {item.label}
+                      <ArrowUpRight
+                        size={12}
+                        className="translate-y-px text-zinc-600 group-hover:text-cyan-300"
+                      />
+                    </a>
+                    <span className="block text-xs text-zinc-500">{t(item.meta)}</span>
+                  </li>
+                ))}
               </ul>
-            </Card>
-          </div>
+            </div>
+
+            <div className="border-t border-zinc-800/80 pt-6">
+              <h2 className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                {t(labels.contact)}
+              </h2>
+              <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+                <li>
+                  <a
+                    href={`mailto:${profile.mail}`}
+                    className="!text-zinc-200 hover:!text-cyan-300"
+                  >
+                    {profile.mail}
+                  </a>
+                </li>
+                <li>{profile.city}</li>
+                <li className="tabular-nums">{profile.born}</li>
+              </ul>
+            </div>
+          </aside>
         </div>
-      </main>
+      </div>
 
-      {/* Modal */}
+      {/* Detail overlay */}
       <AnimatePresence>
-        {modal.open && (
+        {detail && (
           <MotionDiv
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
           >
-            <div className="absolute inset-0 bg-black/70" onClick={close} />
+            <div
+              className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm"
+              onClick={() => setDetail(null)}
+            />
             <MotionDiv
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 20, opacity: 0 }}
-              className="relative w-full max-w-xl bg-gray-900 border border-gray-800 rounded-2xl p-5 shadow-xl"
+              exit={{ y: 10, opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-900 p-6 shadow-2xl"
               role="dialog"
               aria-modal="true"
             >
-              <div className="flex items-start justify-between gap-4">
-                <h4 className="text-xl font-semibold text-cyan-300">
-                  {modal.title}
-                </h4>
-                <mybutton
-                  onClick={close}
-                  className="p-2 rounded-lg hover:bg-gray-800"
+              <div className="flex items-start justify-between gap-6">
+                <div>
+                  <h3 className="font-serif text-xl text-zinc-50">{t(detail.title)}</h3>
+                  {detail.meta && (
+                    <p className="mt-1 text-sm text-zinc-500">{t(detail.meta)}</p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDetail(null)}
+                  aria-label="Close"
+                  className="btn-plain -mt-1 text-zinc-500 hover:text-zinc-200"
                 >
-                  <X />
-                </mybutton>
+                  <X size={18} />
+                </button>
               </div>
-              <p className="mt-3 text-gray-200 leading-relaxed">
-                {modal.content}
-              </p>
 
-              {modal.images && modal.images.length > 0 && (
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                  {modal.images.map((img, i) => {
-                    // Support both string and object for backward compatibility
-                    const src = typeof img === "string" ? img : img.src;
-                    const isPortrait = typeof img === "object" && img.portrait;
+              {detail.detail && (
+                <p className="mt-4 text-[15px] leading-7 text-zinc-300">{t(detail.detail)}</p>
+              )}
+
+              {detail.images?.length > 0 && (
+                <div
+                  className={`mt-5 grid gap-3 ${
+                    detail.images.length === 1 ? "grid-cols-1" : "grid-cols-2"
+                  }`}
+                >
+                  {detail.images.map((image, index) => {
+                    const src = typeof image === "string" ? image : image.src;
+                    const portrait = typeof image === "object" && image.portrait;
                     return (
                       <div
-                        key={i}
-                        className={
-                          isPortrait
-                            ? "aspect-[3/4] bg-gray-800 rounded-xl border border-gray-700 overflow-hidden flex items-center justify-center"
-                            : "aspect-video bg-gray-800 rounded-xl border border-gray-700 overflow-hidden flex items-center justify-center"
-                        }
+                        key={src ?? index}
+                        className={`overflow-hidden rounded-md border border-zinc-800 bg-zinc-950 ${
+                          portrait ? "aspect-[3/4]" : "aspect-video"
+                        }`}
                       >
-                        <img
-                          src={src}
-                          alt=""
-                          className={
-                            // Use object-cover to fill the container
-                            "object-cover w-full h-full"
-                          }
-                        />
+                        <img src={src} alt="" className="h-full w-full object-cover" />
                       </div>
                     );
                   })}
                 </div>
               )}
 
-              {modal.link && (
+              {detail.link && (
                 <a
-                  href={modal.link.href}
-                  target="_blank"
+                  href={detail.link.href}
+                  target={detail.link.href.startsWith("/") ? undefined : "_blank"}
                   rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-2 text-cyan-300 hover:underline"
+                  className="mt-5 inline-flex items-center gap-1 text-sm !text-cyan-400 hover:underline"
                 >
-                  {modal.link.label} <ExternalLink size={16} />
+                  {t(detail.link.label)} <ArrowUpRight size={14} />
                 </a>
               )}
             </MotionDiv>

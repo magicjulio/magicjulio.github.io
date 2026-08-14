@@ -65,6 +65,17 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Buttons that should read as plain text (CV entries, dialog close). */
+.btn-plain {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
