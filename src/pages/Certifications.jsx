@@ -2,6 +2,12 @@ import { useState } from "react";
 
 const certificates = [
 	{
+		title: "AI Control Fundamentals",
+		img: "/certs/lens-ai-control.jpg",
+		url: "https://lensacademy.org/certificate/pcYlUvV4W603C5L6Dxko6g",
+		back: "Lens Academy AI Control Fundamentals (October 2026 cohort), Professional tier.",
+	},
+	{
 		title: "DHM 2025",
     img: "/certs/DHM.jpg",
 		back: "Ich hab mich über cscg für die Deutsche Hacking Meisterschaft 2025 qualifiziert.",
@@ -111,6 +117,17 @@ export default function Certifications() {
 										className="rounded-lg border border-cyan-700/60 px-3 py-1 text-sm text-cyan-200 hover:bg-cyan-900/40"
 									>
 										PDF öffnen
+									</a>
+								)}
+								{cert.url && (
+									<a
+										href={cert.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										onClick={(event) => event.stopPropagation()}
+										className="rounded-lg border border-cyan-700/60 px-3 py-1 text-sm text-cyan-200 hover:bg-cyan-900/40"
+									>
+										Verify credential
 									</a>
 								)}
 							</div>
