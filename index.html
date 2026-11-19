@@ -4,8 +4,31 @@
     <meta charset="UTF-8" />
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Julius</title>
-    
+    <title>Julius Grosserode</title>
+    <meta name="description" content="Julius Grosserode studies computer science at Leibniz University Hannover. Projects, CV, books and certificates." />
+    <meta name="theme-color" content="#09090b" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Apply the saved (or system) theme before the first paint -->
+    <script>
+      (function () {
+        var theme;
+        try { theme = localStorage.getItem('theme'); } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap"
+    />
+
     <!-- Router github pages bypass script -->
     <script type="text/javascript">
       (function(l) {
@@ -20,8 +43,8 @@
       }(window.location))
     </script>
     <!-- END SCRIPT -->
-    <script type="module" crossorigin src="/assets/index-SBR-mXy8.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-C-m1J3Yj.css">
+    <script type="module" crossorigin src="/assets/index-DxiRf907.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-qX4Z0yGl.css">
   </head>
   <body>
     <div id="root"></div>
